@@ -92,7 +92,10 @@ const getFollowersFromInstagram = async (): Promise<FollowerInfo[]> => {
   const followersInfo: FollowerInfo[] = [];
 
   // Init puppeteer
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox'],
+  });
   const page = await browser.newPage();
   // Go to Instagram
   await page.goto('https://www.instagram.com/');
