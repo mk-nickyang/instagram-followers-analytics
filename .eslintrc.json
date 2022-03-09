@@ -1,6 +1,4 @@
 {
   "extends": ["next", "prettier"],
-  "rules": {
-    "no-console": 1
-  }
+  "rules": {}
 }

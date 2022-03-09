@@ -24,6 +24,18 @@ const Home: NextPage = () => {
 
       <main>
         <h1>Instagram Followers Analytics</h1>
+        <table>
+          <tr>
+            <th>Username</th>
+            <th>Follower Count</th>
+          </tr>
+          {followers.map((follower) => (
+            <tr key={follower.username}>
+              <td>{follower.username}</td>
+              <td>{follower.follower_count}</td>
+            </tr>
+          ))}
+        </table>
       </main>
 
       <footer>footer</footer>
