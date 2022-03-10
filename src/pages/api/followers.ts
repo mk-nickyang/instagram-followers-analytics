@@ -1,12 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import chromium from 'chrome-aws-lambda';
-import type { Page } from 'puppeteer-core';
-
-const puppeteer = chromium.puppeteer;
 
 import type { FollowerInfo } from '_types';
 
-const getNumberOfFollowersFromPage = async (page: Page): Promise<number> => {
+const getNumberOfFollowersFromPage = async (page: any): Promise<number> => {
   // Wait for profile page header load
   await page.waitForSelector('header section ul > li:nth-child(2) span[title]');
   // Get number of followers
@@ -21,7 +18,7 @@ const getNumberOfFollowersFromPage = async (page: Page): Promise<number> => {
   return followers;
 };
 
-const getUsernamesFromFollowersList = async (page: Page) => {
+const getUsernamesFromFollowersList = async (page: any) => {
   const followerUsernames = await page.evaluate(() => {
     const usernames: string[] = [];
     document
@@ -39,7 +36,7 @@ const getUsernamesFromFollowersList = async (page: Page) => {
 };
 
 const loadFullFollowersList = async (
-  page: Page,
+  page: any,
   totalNumberOfFollowers: number,
 ): Promise<boolean> => {
   try {
@@ -67,7 +64,7 @@ const loadFullFollowersList = async (
         // If /followers API is not called in 3 seconds, it means list is at bottom
         // Although it may not match with the Instagram followers count
         await page.waitForRequest(
-          (request) =>
+          (request: any) =>
             request.url().includes('/followers') && request.method() === 'GET',
           { timeout: 3000 },
         );
@@ -76,7 +73,7 @@ const loadFullFollowersList = async (
       }
       // Wait for POST /show_many API is called
       await page.waitForResponse(
-        (response) =>
+        (response: any) =>
           response.url().includes('/show_many') && response.status() === 200,
       );
       return loadFullFollowersList(page, totalNumberOfFollowers);
@@ -95,7 +92,7 @@ const getFollowersFromInstagram = async (
   const followersInfo: FollowerInfo[] = [];
 
   // Init puppeteer
-  const browser = await puppeteer.launch();
+  const browser = await chromium.puppeteer.launch();
   const page = await browser.newPage();
   // Go to Instagram
   await page.goto('https://www.instagram.com/');
