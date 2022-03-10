@@ -88,17 +88,17 @@ const loadFullFollowersList = async (
   }
 };
 
-const getFollowersFromInstagram = async (): Promise<FollowerInfo[]> => {
+const getFollowersFromInstagram = async (
+  username: string,
+): Promise<FollowerInfo[]> => {
   const followersInfo: FollowerInfo[] = [];
 
   // Init puppeteer
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox'],
-  });
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
   // Go to Instagram
   await page.goto('https://www.instagram.com/');
+  console.log('go to instagram');
   // Wait for login form load
   await page.waitForSelector('input[name="username"]');
   // Enter test Instagram account email
@@ -114,8 +114,9 @@ const getFollowersFromInstagram = async (): Promise<FollowerInfo[]> => {
   await page.waitForNavigation({
     waitUntil: 'networkidle2',
   });
+  console.log('login success');
   // Go to profile
-  await page.goto('https://www.instagram.com/singsingtime/');
+  await page.goto(`https://www.instagram.com/${username}/`);
   // Get number of followers
   const followers: number = await getNumberOfFollowersFromPage(page);
   if (followers > 0) {
@@ -148,7 +149,7 @@ const getFollowersFromInstagram = async (): Promise<FollowerInfo[]> => {
           follower_count: followerCount,
         });
       } catch (error) {
-        console.log(error);
+        console.log(`failed to fetch profile from ${followerUsername}`, error);
         // Close page
         await profilePage.close();
         continue;
@@ -165,9 +166,15 @@ const handler = async (
   req: NextApiRequest,
   res: NextApiResponse<FollowerInfo[]>,
 ) => {
-  const followersInfo = await getFollowersFromInstagram();
-  console.log('followersInfo', followersInfo);
-  res.status(200).json(followersInfo);
+  const { username } = req.query;
+
+  if (username && typeof username === 'string') {
+    const followersInfo = await getFollowersFromInstagram(username);
+    console.log('followersInfo', followersInfo);
+    res.status(200).json(followersInfo);
+  } else {
+    res.status(400).json([]);
+  }
 };
 
 export default handler;

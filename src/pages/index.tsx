@@ -1,18 +1,39 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import { useState, useRef, KeyboardEvent } from 'react';
+import {
+  Container,
+  Input,
+  InputGroup,
+  InputRightElement,
+  IconButton,
+  Heading,
+  Stack,
+} from '@chakra-ui/react';
+import { SearchIcon } from '@chakra-ui/icons';
 
-import { useFollowers } from '_hooks';
+import { FollowersTable } from '_components';
 
 const Home: NextPage = () => {
-  const { followers, error } = useFollowers();
+  const [insUsername, setInsUsername] = useState<string>('');
 
-  if (error) return <div>Failed to load</div>;
-  if (!followers) return <div>Loading...</div>;
+  const insUsernameInput = useRef<HTMLInputElement | null>(null);
 
-  console.log(followers);
+  const onInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onSearchClick();
+    }
+  };
+
+  const onSearchClick = () => {
+    const insUsernameInputValue = insUsernameInput.current?.value;
+    if (insUsernameInputValue) {
+      setInsUsername(insUsernameInputValue);
+    }
+  };
 
   return (
-    <div>
+    <>
       <Head>
         <title>Instagram Followers Analytics</title>
         <meta
@@ -23,23 +44,30 @@ const Home: NextPage = () => {
       </Head>
 
       <main>
-        <h1>Instagram Followers Analytics</h1>
-        <table>
-          <tr>
-            <th>Username</th>
-            <th>Follower Count</th>
-          </tr>
-          {followers.map((follower) => (
-            <tr key={follower.username}>
-              <td>{follower.username}</td>
-              <td>{follower.follower_count}</td>
-            </tr>
-          ))}
-        </table>
-      </main>
+        <Container py={10}>
+          <Stack spacing={5}>
+            <Heading size="lg">Instagram Followers Analytics</Heading>
 
-      <footer>footer</footer>
-    </div>
+            <InputGroup>
+              <Input
+                ref={insUsernameInput}
+                placeholder="Enter your Instagram username, e.g. (singsingtime)"
+                onKeyDown={onInputKeyDown}
+              />
+              <InputRightElement>
+                <IconButton
+                  aria-label="Search followers"
+                  icon={<SearchIcon />}
+                  onClick={onSearchClick}
+                />
+              </InputRightElement>
+            </InputGroup>
+
+            {insUsername && <FollowersTable insUsername={insUsername} />}
+          </Stack>
+        </Container>
+      </main>
+    </>
   );
 };
 
