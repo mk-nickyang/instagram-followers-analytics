@@ -1,11 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import puppeteer from 'puppeteer';
+import type { Page } from 'puppeteer';
+import chromium from 'chrome-aws-lambda';
+
+const puppeteer =
+  process.env.NODE_ENV === 'production'
+    ? chromium.puppeteer
+    : require('puppeteer');
 
 import type { FollowerInfo } from '_types';
 
-const getNumberOfFollowersFromPage = async (
-  page: puppeteer.Page,
-): Promise<number> => {
+const getNumberOfFollowersFromPage = async (page: Page): Promise<number> => {
   // Wait for profile page header load
   await page.waitForSelector('header section ul > li:nth-child(2) span[title]');
   // Get number of followers
@@ -20,7 +24,7 @@ const getNumberOfFollowersFromPage = async (
   return followers;
 };
 
-const getUsernamesFromFollowersList = async (page: puppeteer.Page) => {
+const getUsernamesFromFollowersList = async (page: Page) => {
   const followerUsernames = await page.evaluate(() => {
     const usernames: string[] = [];
     document
@@ -38,7 +42,7 @@ const getUsernamesFromFollowersList = async (page: puppeteer.Page) => {
 };
 
 const loadFullFollowersList = async (
-  page: puppeteer.Page,
+  page: Page,
   totalNumberOfFollowers: number,
 ): Promise<boolean> => {
   try {
