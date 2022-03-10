@@ -1,9 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import chromium from 'chrome-aws-lambda';
+import type { Page } from 'puppeteer-core';
 
 import type { FollowerInfo } from '_types';
 
-const getNumberOfFollowersFromPage = async (page: any): Promise<number> => {
+const getNumberOfFollowersFromPage = async (page: Page): Promise<number> => {
   // Wait for profile page header load
   await page.waitForSelector('header section ul > li:nth-child(2) span[title]');
   // Get number of followers
@@ -18,7 +19,7 @@ const getNumberOfFollowersFromPage = async (page: any): Promise<number> => {
   return followers;
 };
 
-const getUsernamesFromFollowersList = async (page: any) => {
+const getUsernamesFromFollowersList = async (page: Page) => {
   const followerUsernames = await page.evaluate(() => {
     const usernames: string[] = [];
     document
@@ -36,7 +37,7 @@ const getUsernamesFromFollowersList = async (page: any) => {
 };
 
 const loadFullFollowersList = async (
-  page: any,
+  page: Page,
   totalNumberOfFollowers: number,
 ): Promise<boolean> => {
   try {
@@ -64,7 +65,7 @@ const loadFullFollowersList = async (
         // If /followers API is not called in 3 seconds, it means list is at bottom
         // Although it may not match with the Instagram followers count
         await page.waitForRequest(
-          (request: any) =>
+          (request) =>
             request.url().includes('/followers') && request.method() === 'GET',
           { timeout: 3000 },
         );
@@ -73,7 +74,7 @@ const loadFullFollowersList = async (
       }
       // Wait for POST /show_many API is called
       await page.waitForResponse(
-        (response: any) =>
+        (response) =>
           response.url().includes('/show_many') && response.status() === 200,
       );
       return loadFullFollowersList(page, totalNumberOfFollowers);
@@ -108,10 +109,13 @@ const getFollowersFromInstagram = async (
   // Enter test Instagram account email
   await page.type(
     'input[name="username"]',
-    'instagram.followers.analytics@gmail.com',
+    process.env.TEST_INSTAGRAM_ACCOUNT_EMAIL!,
   );
   // Enter test Instagram account password
-  await page.type('input[name="password"]', 'FtIw6hropMB1');
+  await page.type(
+    'input[name="password"]',
+    process.env.TEST_INSTAGRAM_ACCOUNT_PASSWORD!,
+  );
   // Click login button
   await page.click('button[type="submit"]');
   // Wait for login success redirect

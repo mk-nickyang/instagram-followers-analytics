@@ -1,5 +1,4 @@
 import React from 'react';
-import useSWR from 'swr';
 import {
   Center,
   Alert,
@@ -15,26 +14,30 @@ import {
 
 import type { FollowerInfo } from '_types';
 
-type FollowersTableProps = { insUsername: string };
+type FollowersTableProps = {
+  isLoading: boolean;
+  isError: boolean;
+  data: FollowerInfo[];
+};
 
-const FollowersTable: React.FC<FollowersTableProps> = ({ insUsername }) => {
-  const { data, error } = useSWR<FollowerInfo[]>(
-    insUsername ? `/api/followers?username=${insUsername}` : null,
-  );
+const FollowersTable: React.FC<FollowersTableProps> = ({
+  isLoading,
+  isError,
+  data,
+}) => {
+  if (isLoading)
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
 
-  if (error)
+  if (isError)
     return (
       <Alert status="error">
         <AlertIcon />
         There was an error fetching your followers
       </Alert>
-    );
-
-  if (!data)
-    return (
-      <Center>
-        <Spinner />
-      </Center>
     );
 
   return (

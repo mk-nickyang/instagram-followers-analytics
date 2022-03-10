@@ -11,11 +11,15 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
+import axios from 'axios';
 
 import { FollowersTable } from '_components';
+import type { FollowerInfo } from '_types';
 
 const Home: NextPage = () => {
-  const [insUsername, setInsUsername] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [followers, setFollowers] = useState<FollowerInfo[]>([]);
+  const [isError, setIsError] = useState<boolean>(false);
 
   const insUsernameInput = useRef<HTMLInputElement | null>(null);
 
@@ -25,10 +29,21 @@ const Home: NextPage = () => {
     }
   };
 
-  const onSearchClick = () => {
-    const insUsernameInputValue = insUsernameInput.current?.value;
-    if (insUsernameInputValue) {
-      setInsUsername(insUsernameInputValue);
+  const onSearchClick = async () => {
+    const insUsername = insUsernameInput.current?.value;
+    if (insUsername) {
+      setIsLoading(true);
+      setIsError(false);
+      try {
+        const { data } = await axios.get<FollowerInfo[]>(
+          `/api/followers?username=${insUsername}`,
+        );
+        setFollowers(data);
+      } catch (error) {
+        console.log(error);
+        setIsError(true);
+      }
+      setIsLoading(false);
     }
   };
 
@@ -63,7 +78,11 @@ const Home: NextPage = () => {
               </InputRightElement>
             </InputGroup>
 
-            {insUsername && <FollowersTable insUsername={insUsername} />}
+            <FollowersTable
+              isLoading={isLoading}
+              isError={isError}
+              data={followers}
+            />
           </Stack>
         </Container>
       </main>
