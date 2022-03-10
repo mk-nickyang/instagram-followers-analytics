@@ -1,11 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { Page } from 'puppeteer';
 import chromium from 'chrome-aws-lambda';
+import type { Page } from 'puppeteer-core';
 
-const puppeteer =
-  process.env.NODE_ENV === 'production'
-    ? chromium.puppeteer
-    : require('puppeteer');
+const puppeteer = chromium.puppeteer;
 
 import type { FollowerInfo } from '_types';
 
