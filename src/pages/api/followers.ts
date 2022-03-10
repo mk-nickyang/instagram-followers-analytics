@@ -177,9 +177,14 @@ const handler = async (
   const { username } = req.query;
 
   if (username && typeof username === 'string') {
-    const followersInfo = await getFollowersFromInstagram(username);
-    console.log('followersInfo', followersInfo);
-    res.status(200).json(followersInfo);
+    try {
+      const followersInfo = await getFollowersFromInstagram(username);
+      console.log('followersInfo', followersInfo);
+      res.status(200).json(followersInfo);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json([]);
+    }
   } else {
     res.status(400).json([]);
   }
