@@ -10,6 +10,7 @@ import {
   Tr,
   Th,
   Td,
+  Avatar,
 } from '@chakra-ui/react';
 
 import type { FollowerInfo } from '_types';
@@ -44,15 +45,23 @@ const FollowersTable: React.FC<FollowersTableProps> = ({
     <Table>
       <Thead>
         <Tr>
+          {/* <Th></Th> */}
           <Th>Username</Th>
+          <Th>Full Name</Th>
           <Th>Follower Count</Th>
+          <Th>Following Count</Th>
         </Tr>
       </Thead>
       <Tbody>
         {data.map((follower) => (
-          <Tr key={follower.username}>
+          <Tr key={follower.id}>
+            {/* <Td>
+              <Avatar src={follower.profile_pic_url} />
+            </Td> */}
             <Td>{follower.username}</Td>
+            <Td>{follower.full_name}</Td>
             <Td>{follower.follower_count}</Td>
+            <Td>{follower.following_count}</Td>
           </Tr>
         ))}
       </Tbody>
