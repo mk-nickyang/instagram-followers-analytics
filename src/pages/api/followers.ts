@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import chromium from 'chrome-aws-lambda';
-import type { Page } from 'puppeteer-core';
+import playwright, { Page } from 'playwright-core';
 
 import type { FollowerInfo } from '_types';
 
@@ -93,12 +93,10 @@ const getFollowersFromInstagram = async (
   const followersInfo: FollowerInfo[] = [];
 
   // Init puppeteer
-  const browser = await chromium.puppeteer.launch({
+  const browser = await playwright.chromium.launch({
     args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath,
     headless: chromium.headless,
-    ignoreHTTPSErrors: true,
   });
   const page = await browser.newPage();
   // Go to Instagram
@@ -120,7 +118,7 @@ const getFollowersFromInstagram = async (
   await page.click('button[type="submit"]');
   // Wait for login success redirect
   await page.waitForNavigation({
-    waitUntil: 'networkidle2',
+    waitUntil: 'domcontentloaded',
   });
   console.log('login success');
   // Go to profile
