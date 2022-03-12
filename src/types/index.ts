@@ -7,7 +7,6 @@ export type FollowerInfo = {
   follower_count?: number;
   following_count?: number;
   media_count?: number;
-  biography?: string;
   is_business?: boolean;
 };
 
@@ -18,7 +17,6 @@ export type IGUser = {
   full_name: string;
   is_private: boolean;
   profile_pic_url: string;
-  profile_pic_id: string;
 };
 
 export type IGFollowersResponseData = {
@@ -34,7 +32,6 @@ export interface IGUserProfile extends IGUser {
   follower_count: number;
   following_count: number;
   media_count: number;
-  biography: string;
   is_business: boolean;
 }
 

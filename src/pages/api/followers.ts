@@ -102,6 +102,8 @@ const getFollowersFromInstagram = async (
             profile_pic_url: userInfoData.user.profile_pic_url,
             follower_count: userInfoData.user.follower_count,
             following_count: userInfoData.user.following_count,
+            media_count: userInfoData.user.media_count,
+            is_business: userInfoData.user.is_business,
           };
         } catch (error) {
           console.log('fetch user info failed', follower, error);

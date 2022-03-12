@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, SkeletonCircle } from '@chakra-ui/react';
+import { Avatar, Skeleton } from 'antd';
 import useSWRImmutable from 'swr/immutable';
 import queryString from 'query-string';
 
@@ -15,7 +15,7 @@ const IGImage: React.FC<IGImageProps> = ({ imgURL }) => {
   }
 
   if (!data) {
-    return <SkeletonCircle />;
+    return <Skeleton.Avatar active />;
   }
 
   return <Avatar src={`data:image/jpeg;base64,${data}`} />;

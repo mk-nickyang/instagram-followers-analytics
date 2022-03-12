@@ -1,92 +1,54 @@
 import type { NextPage } from 'next';
-import Head from 'next/head';
-import { useState, useRef, KeyboardEvent } from 'react';
-import {
-  Container,
-  Input,
-  InputGroup,
-  InputRightElement,
-  IconButton,
-  Heading,
-  Stack,
-} from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
-import axios from 'axios';
+import { Typography, Input, Form } from 'antd';
+import { useRouter } from 'next/router';
 
-import { FollowersTable, IGImage } from '_components';
-import type { FollowerInfo } from '_types';
+import { preset } from '_styles';
 
 const Home: NextPage = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [followers, setFollowers] = useState<FollowerInfo[]>([]);
-  const [isError, setIsError] = useState<boolean>(false);
+  const router = useRouter();
 
-  const insUsernameInput = useRef<HTMLInputElement | null>(null);
-
-  const onInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      onSearchClick();
-    }
-  };
-
-  const onSearchClick = async () => {
-    const insUsername = insUsernameInput.current?.value;
-    if (insUsername) {
-      setIsLoading(true);
-      setIsError(false);
-      try {
-        const { data } = await axios.get<FollowerInfo[]>(
-          `/api/followers?username=${insUsername}`,
-        );
-        setFollowers(data);
-      } catch (error) {
-        console.log(error);
-        setIsError(true);
-      }
-      setIsLoading(false);
+  const onSearchClick = (searchValue: string) => {
+    if (searchValue.trim()) {
+      router.push(`/followers/${searchValue}`);
     }
   };
 
   return (
-    <>
-      <Head>
-        <title>Instagram Followers Analytics</title>
-        <meta
-          name="description"
-          content="Find out your most-followed followers on Instagram"
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <main
+      css={{
+        paddingTop: '30vh',
+        paddingLeft: preset.spacing(3),
+        paddingRight: preset.spacing(3),
+        paddingBottom: preset.spacing(10),
+      }}
+    >
+      <div
+        css={{
+          maxWidth: 640,
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}
+      >
+        <div css={{ textAlign: 'center', marginBottom: preset.spacing(3) }}>
+          <Typography.Title level={1}>
+            Find out your most-followed followers on Instagram
+          </Typography.Title>
+        </div>
 
-      <main>
-        <Container py={10}>
-          <Stack spacing={5}>
-            <Heading size="lg">Instagram Followers Analytics</Heading>
-
-            <InputGroup>
-              <Input
-                ref={insUsernameInput}
-                placeholder="Enter your Instagram username, e.g. (singsingtime)"
-                onKeyDown={onInputKeyDown}
-              />
-              <InputRightElement>
-                <IconButton
-                  aria-label="Search followers"
-                  icon={<SearchIcon />}
-                  onClick={onSearchClick}
-                />
-              </InputRightElement>
-            </InputGroup>
-
-            <FollowersTable
-              isLoading={isLoading}
-              isError={isError}
-              data={followers}
+        <Form
+          css={{ '.ant-form-item-explain': { marginTop: preset.spacing(1) } }}
+        >
+          <Form.Item help="* Public Instagram account only">
+            <Input.Search
+              size="large"
+              placeholder="Enter your Instagram username"
+              enterButton="Search"
+              onSearch={onSearchClick}
             />
-          </Stack>
-        </Container>
-      </main>
-    </>
+          </Form.Item>
+        </Form>
+      </div>
+    </main>
   );
 };
 
