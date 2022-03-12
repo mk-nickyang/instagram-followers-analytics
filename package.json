@@ -18,8 +18,10 @@
     "lodash": "^4.17.21",
     "next": "12.1.0",
     "puppeteer": "^13.5.1",
+    "query-string": "^7.1.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "swr": "^1.2.2",
     "user-agents": "^1.0.952"
   },
   "devDependencies": {

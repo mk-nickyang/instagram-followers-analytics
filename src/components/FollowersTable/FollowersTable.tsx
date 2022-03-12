@@ -10,10 +10,10 @@ import {
   Tr,
   Th,
   Td,
-  Avatar,
 } from '@chakra-ui/react';
 
 import type { FollowerInfo } from '_types';
+import { IGImage } from '_components';
 
 type FollowersTableProps = {
   isLoading: boolean;
@@ -45,7 +45,7 @@ const FollowersTable: React.FC<FollowersTableProps> = ({
     <Table>
       <Thead>
         <Tr>
-          {/* <Th></Th> */}
+          <Th></Th>
           <Th>Username</Th>
           <Th>Full Name</Th>
           <Th>Follower Count</Th>
@@ -53,11 +53,11 @@ const FollowersTable: React.FC<FollowersTableProps> = ({
         </Tr>
       </Thead>
       <Tbody>
-        {data.map((follower) => (
+        {data.slice(0, 1).map((follower) => (
           <Tr key={follower.id}>
-            {/* <Td>
-              <Avatar src={follower.profile_pic_url} />
-            </Td> */}
+            <Td>
+              <IGImage imgURL={follower.profile_pic_url} />
+            </Td>
             <Td>{follower.username}</Td>
             <Td>{follower.full_name}</Td>
             <Td>{follower.follower_count}</Td>

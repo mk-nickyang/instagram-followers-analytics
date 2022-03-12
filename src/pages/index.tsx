@@ -13,7 +13,7 @@ import {
 import { SearchIcon } from '@chakra-ui/icons';
 import axios from 'axios';
 
-import { FollowersTable } from '_components';
+import { FollowersTable, IGImage } from '_components';
 import type { FollowerInfo } from '_types';
 
 const Home: NextPage = () => {

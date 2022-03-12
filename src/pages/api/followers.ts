@@ -2,15 +2,16 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import puppeteer from 'puppeteer';
 import UserAgent from 'user-agents';
 import axios, { AxiosRequestHeaders } from 'axios';
-import { chunk } from 'lodash';
+import chunk from 'lodash/chunk';
 
 import type {
   FollowerInfo,
   IGFollowersResponseData,
   IGUserInfoResponseData,
+  IGUsernameResponseData,
 } from '_types';
 
-const yoinkFollowersFromInstagram = async (
+const getFollowersFromInstagram = async (
   username: string,
 ): Promise<FollowerInfo[]> => {
   // Init puppeteer
@@ -41,46 +42,40 @@ const yoinkFollowersFromInstagram = async (
   await page.waitForNavigation();
   console.log('login success');
 
-  // Go to profile
-  await page.goto(`https://www.instagram.com/${username}/`);
   // Get Instagram API request headers
-  const insRquest = await page.waitForRequest(
+  const igRquest = await page.waitForRequest(
     (request) =>
       request.url().includes('i.instagram.com') && request.method() === 'GET',
   );
-  const requestHeaders = insRquest.headers();
+  const requestHeaders = igRquest.headers();
   const igAppId = requestHeaders['x-ig-app-id'];
   // Get cookies
   const cookies = await page.cookies();
   const cookieString = cookies
     .map((cookie) => `${cookie.name}=${cookie.value}`)
     .join('; ');
-  // Get number of followers
-  await page.waitForSelector("a[href*='/followers']");
-  const followersString = await page.evaluate(() =>
-    document.querySelector("a[href*='/followers'] span")?.getAttribute('title'),
+  // Get user id and number of followers
+  const { data: igUserData } = await axios.get<IGUsernameResponseData>(
+    `https://www.instagram.com/${username}/?__a=1`,
+    { headers: { userAgent, cookie: cookieString } },
   );
-  const numberOfFollowers: number = followersString
-    ? Number(followersString.replace(/,/g, ''))
-    : 0;
-  // Get user id
-  // TODO: Use IG API or something to get user ID
-  const userId = '31539244853';
+  const userId = igUserData.graphql.user.id;
+  const numberOfFollowers = igUserData.graphql.user.edge_followed_by.count;
   // Set Instagram API headers
-  const insRequestHeaders: AxiosRequestHeaders = {
+  const igRequestHeaders: AxiosRequestHeaders = {
     userAgent,
     'x-ig-app-id': igAppId,
     cookie: cookieString,
   };
   // Use Instagram API to fetch followers
-  const { data: insFollowersData } = await axios.get<IGFollowersResponseData>(
+  const { data: igFollowersData } = await axios.get<IGFollowersResponseData>(
     `https://i.instagram.com/api/v1/friendships/${userId}/followers/`,
     {
-      headers: insRequestHeaders,
+      headers: igRequestHeaders,
       params: { count: numberOfFollowers },
     },
   );
-  const followers = insFollowersData.users;
+  const followers = igFollowersData.users;
   console.log(`found ${followers.length} followers`);
   // Use Instagram API to fetch each follower's follower count
   // Chunk followers list into small ones
@@ -96,7 +91,7 @@ const yoinkFollowersFromInstagram = async (
             await axios.get<IGUserInfoResponseData>(
               `https://i.instagram.com/api/v1/users/${follower.pk}/info/`,
               {
-                headers: insRequestHeaders,
+                headers: igRequestHeaders,
               },
             );
           return {
@@ -141,7 +136,7 @@ const handler = async (
 
   if (username && typeof username === 'string') {
     try {
-      const followersInfo = await yoinkFollowersFromInstagram(username);
+      const followersInfo = await getFollowersFromInstagram(username);
       res.status(200).json(followersInfo);
     } catch (error) {
       console.log(error);

@@ -1,12 +1,17 @@
 import type { AppProps } from 'next/app';
+import { SWRConfig } from 'swr';
 import { ChakraProvider } from '@chakra-ui/react';
 
-function MyApp({ Component, pageProps }: AppProps) {
+import { fetcher } from '_utils';
+
+const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <ChakraProvider>
-      <Component {...pageProps} />
+      <SWRConfig value={{ fetcher }}>
+        <Component {...pageProps} />
+      </SWRConfig>
     </ChakraProvider>
   );
-}
+};
 
 export default MyApp;
