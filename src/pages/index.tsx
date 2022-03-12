@@ -41,7 +41,7 @@ const Home: NextPage = () => {
           <Form.Item help="* Public Instagram account only">
             <Input.Search
               size="large"
-              placeholder="Enter your Instagram username"
+              placeholder="Enter your Instagram username e.g. singsingtime"
               enterButton="Search"
               onSearch={onSearchClick}
             />

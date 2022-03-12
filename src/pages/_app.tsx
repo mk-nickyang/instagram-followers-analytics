@@ -13,7 +13,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         <title>Instagram Followers Analytics</title>
         <meta
           name="description"
-          content="Find out your most-followed followers on Instagram"
+          content="Find out which of your Instagram followers, has the most followers"
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>

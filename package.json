@@ -1,7 +1,7 @@
 {
   "name": "instagram-followers-analytics",
   "version": "0.1.0",
-  "description": "Find out your most-followed followers on Instagram",
+  "description": "Find out which of your Instagram followers, has the most followers",
   "private": true,
   "author": "Nicky <nickyang0501+work@gmail.com>",
   "scripts": {
