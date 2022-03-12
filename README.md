@@ -19,6 +19,7 @@ But Instagram makes it really hard, unless we use some third party tools. So I w
    ```
 
 1. Type your Instagram username and hit Enter and
+
    <img src="loading_time.jpeg" width="240"/>
 
 1. Got followers data 🥳
